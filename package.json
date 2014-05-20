@@ -1,0 +1,28 @@
+{
+  "name": "walking-dead",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:nowk/walking-dead.js.git"
+  },
+  "author": "Yung Hwa Kwon",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nowk/walking-dead.js/issues"
+  },
+  "homepage": "https://github.com/nowk/walking-dead.js",
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "express": "^4.2.0",
+    "sinon": "^1.9.1"
+  },
+  "dependencies": {
+    "q": "^1.0.1",
+    "zombie": "^2.0.0-alpha31"
+  }
+}
