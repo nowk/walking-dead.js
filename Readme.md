@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/nowk/walking-dead.js.png)](https://codeclimate.com/github/nowk/walking-dead.js)
+
 # Walking Dead
 
 Zombies don't like pasta.
