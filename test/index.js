@@ -114,11 +114,11 @@ describe("WalkingDead", function() {
       .then(function(browser, arg1, arg2,  next) {
         assert.equal(arg1, 'walking dead');
         assert.equal(arg2, 'Walking Dead!');
-        next(null, arg1, arg2);
+        next(null, arg1+'!', arg2+'!');
       })
       .and(function(browser, arg1, arg2) {
-        assert.equal(arg1, 'walking dead');
-        assert.equal(arg2, 'Walking Dead!');
+        assert.equal(arg1, 'walking dead!');
+        assert.equal(arg2, 'Walking Dead!!');
       })
       .and(function(browser, next) {
         assert.equal(typeof next, 'function');
