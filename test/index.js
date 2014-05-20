@@ -104,5 +104,26 @@ describe("WalkingDead", function() {
         done();
     //   });
   });
+
+  it("can pass along additional arguments to the next step", function(done) {
+    new WalkingDead(url).zombify(zopts)
+      .given(function(browser, next) {
+        var title = browser.text('title');
+        next(null, title.toLowerCase(), title+'!');
+      })
+      .then(function(browser, arg1, arg2,  next) {
+        assert.equal(arg1, 'walking dead');
+        assert.equal(arg2, 'Walking Dead!');
+        next(null, arg1, arg2);
+      })
+      .and(function(browser, arg1, arg2) {
+        assert.equal(arg1, 'walking dead');
+        assert.equal(arg2, 'Walking Dead!');
+      })
+      .and(function(browser, next) {
+        assert.equal(typeof next, 'function');
+        next(done);
+      });
+  });
 });
 

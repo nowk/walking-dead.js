@@ -74,12 +74,6 @@ function step(fn) {
     throw new Error(msg);
   }
 
-  if (fn.length === 2) {
-    fn = turn(fn).bind(null, this.browser); // async wrap in promise
-  } else {
-    fn = fn.bind(null, this.browser);
-  }
-
   this._steps.push(fn);
 
   if (!this.walking) {
@@ -113,11 +107,19 @@ function walk() {
     var self = this;
     var fn = this._steps.shift();
 
+    var passArgsLength = !!!this._passArgs ? 0 : this._passArgs.length;
+    if (fn.length-passArgsLength === 2) {
+      fn = turn(fn).bind(this, this.browser, this._passArgs); // async wrap in promise
+    }
+
     this.d.run(function() {
       process.nextTick(function() {
-        var _return = fn();
+        var _return = (true === fn.promised) ?
+          fn() :
+          fn.apply(fn, [self.browser].concat(self._passArgs));
 
         if ('undefined' === typeof _return || 'Promise' !== _return.constructor.name) {
+          delete self._passArgs;
           return walk.call(self);
         }
 
@@ -138,11 +140,18 @@ function walk() {
  */
 
 function turn(fn) {
-  return function(browser) {
+  var _fn = function(browser, extraArgs) {
     var d = Q.defer();
-    fn.call(fn, browser, next.bind(null, d));
+    var args = [browser];
+    if ('undefined' !== typeof extraArgs) {
+      args = args.concat(extraArgs);
+    }
+    args.push(next.bind(this, d));
+    fn.apply(fn, args);
     return d.promise;
   };
+  _fn.promised = true;
+  return _fn;
 }
 
 /*
@@ -156,8 +165,17 @@ function turn(fn) {
 function next(defer, callback) {
   defer.resolve();
 
+  // if callback is a function execute and return, this is primarily
+  // reserved to handle `done` invocations for async tests
   if ('function' === typeof callback) {
-    callback();
+    return callback();
+  }
+
+  var passArgs = Array.prototype.slice.call(arguments, 2, arguments.length);
+  if (passArgs.length > 0) {
+    this._passArgs = passArgs;
+  } else {
+    delete this._passArgs;
   }
 }
 
