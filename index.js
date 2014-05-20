@@ -89,7 +89,7 @@ function step(fn) {
       walk.call(this);
     } else {
       var self = this;
-      this._zombie(function(err, browser, status) {
+      this._zombie(function(err) { // [, browser, status] these always come undefined....
         if (err) {
           throw err;
         }
@@ -117,7 +117,7 @@ function walk() {
       process.nextTick(function() {
         var _return = fn();
 
-        if ('undefined' === typeof _return || 'Promise' != _return.constructor.name) {
+        if ('undefined' === typeof _return || 'Promise' !== _return.constructor.name) {
           return walk.call(self);
         }
 
