@@ -2,7 +2,7 @@
 
 Zombies don't like pasta.
 
-# install
+# Install
 
     npm install walking-dead
 
@@ -41,7 +41,7 @@ Becomes Walking Dead
           fill("password", "eat-the-living").
       })
       .and(function(browser, next) {
-        pressButton("Sign Me Up!", next);
+        browser.pressButton("Sign Me Up!", next);
       })
       .then(function(browser) {
         assert.ok(browser.success);
