@@ -50,6 +50,25 @@ Becomes Walking Dead
         assert.equal(browser.text("title"), "Welcome To Brains Depot");
       });
 
+---
+
+Passing additional `agruments` to the next step.
+
+    new WalkingDead('http://localhost:3000/').zombify({})
+      .when(function(browser, next) {
+        var title = browser.text('title');
+        next(null, title.toLowerCase());
+      })
+      .then(function(browser, lowerCaseTitle, next) {
+        assert.equal(lowerCaseTitle, '<a lowercased title>');
+        next(done);
+      });
+
+The first argument in `next` is reserved for a `function` to be executed immediately. The primary use would be for `done` on async test cases. 
+
+*`next` argument, in step functions,  will always be the last argument.*
+
+
 # License
 
 MIT
