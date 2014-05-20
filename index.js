@@ -50,11 +50,11 @@ WalkingDead.prototype.zombify = function(opts) {
  * chained methods
  */
 
-WalkingDead.prototype.given = step;
-WalkingDead.prototype.when = step;
-WalkingDead.prototype.then = step;
-WalkingDead.prototype.and = step;
-WalkingDead.prototype.step = step;
+var chainMethods = ['given', 'when', 'then', 'and', 'step'];
+chainMethods
+  .forEach(function(m) {
+    WalkingDead.prototype[m] = step;
+  });
 
 /*
  * push steps to queue and start walking if not
