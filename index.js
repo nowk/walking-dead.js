@@ -119,7 +119,7 @@ function walk() {
           fn.apply(fn, [self.browser].concat(self._passArgs));
 
         if ('undefined' === typeof _return || 'Promise' !== _return.constructor.name) {
-          delete self._passArgs;
+          clearPassArgs.call(self);
           return walk.call(self);
         }
 
@@ -175,7 +175,16 @@ function next(defer, callback) {
   if (passArgs.length > 0) {
     this._passArgs = passArgs;
   } else {
-    delete this._passArgs;
+    clearPassArgs.call(this);
   }
 }
 
+/*
+ * undefine _passArgs
+ *
+ * @api private
+ */
+
+function clearPassArgs() {
+  delete this._passArgs;
+}
