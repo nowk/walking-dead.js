@@ -40,13 +40,9 @@ function WalkingDead(url) {
  */
 
 WalkingDead.prototype.zombify = function(opts) {
-  if ('undefined' === typeof opts) {
-    opts = {};
-  }
-
+  opts = opts || {};
   this.browser = new Browser(opts);
   this._zombie = this.browser.visit.bind(this.browser, this.url);
-
   return this;
 };
 
