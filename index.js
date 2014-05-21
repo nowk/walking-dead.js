@@ -102,24 +102,22 @@ function walk() {
   if (this._steps.length > 0) {
     var self = this;
     var fn = this._steps.shift();
-
     var passArgsLength = !!!this._passArgs ? 0 : this._passArgs.length;
+
     if (fn.length-passArgsLength === 2) {
       fn = turn(fn).bind(this, this.browser, this._passArgs); // async wrap in promise
+      fn._promised = true;
     }
 
     this.d.run(function() {
       process.nextTick(function() {
-        var _return = (true === fn.promised) ?
-          fn() :
+        if (fn._promised) {
+          fn().then(walk.bind(self));
+        } else {
           fn.apply(fn, [self.browser].concat(self._passArgs));
-
-        if ('undefined' === typeof _return || 'Promise' !== _return.constructor.name) {
           clearPassArgs.call(self);
-          return walk.call(self);
+          walk.call(self);
         }
-
-        _return.then(walk.bind(self));
       });
     });
   } else {
@@ -136,7 +134,7 @@ function walk() {
  */
 
 function turn(fn) {
-  var _fn = function(browser, extraArgs) {
+  return function(browser, extraArgs) {
     var d = Q.defer();
     var args = [browser];
     if ('undefined' !== typeof extraArgs) {
@@ -146,8 +144,6 @@ function turn(fn) {
     fn.apply(fn, args);
     return d.promise;
   };
-  _fn.promised = true;
-  return _fn;
 }
 
 /*

@@ -108,19 +108,23 @@ describe("WalkingDead", function() {
   it("can pass along additional arguments to the next step", function(done) {
     new WalkingDead(url).zombify(zopts)
       .given(function(browser, next) {
+        assert.lengthOf(arguments, 2);
         var title = browser.text('title');
         next(null, title.toLowerCase(), title+'!');
       })
       .then(function(browser, arg1, arg2,  next) {
+        assert.lengthOf(arguments, 4);
         assert.equal(arg1, 'walking dead');
         assert.equal(arg2, 'Walking Dead!');
         next(null, arg1+'!', arg2+'!');
       })
       .and(function(browser, arg1, arg2) {
+        assert.lengthOf(arguments, 3);
         assert.equal(arg1, 'walking dead!');
         assert.equal(arg2, 'Walking Dead!!');
       })
       .and(function(browser, next) {
+        assert.lengthOf(arguments, 2);
         assert.equal(typeof next, 'function');
         next(done);
       });
