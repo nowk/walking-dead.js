@@ -124,7 +124,7 @@ function walk() {
 }
 
 /*
- * return function after curry (and async if applicable)
+ * curry and promise (if applicable)
  *
  * @param {Function} fn
  * @return {Function}
@@ -132,30 +132,27 @@ function walk() {
  */
 
 function turn(fn) {
-  return (2 === (fn.length - this._passargs.length)) ?
-    promise.bind(this, fn) :
-    argumentate.call(this, fn);
+  if (2 === (fn.length - this._passargs.length)) {
+    return promise.bind(this, curry.call(this, fn));
+  } else {
+    return curry.call(this, fn);
+  }
 }
 
 /*
  * curry arguments
  *
  * @param {Function} fn
- * @param {Function} callback
  * @return {Function}
  * @api private
  */
 
-function argumentate(fn, callback) {
+function curry(fn) {
   var args = [this.browser].concat(this._passargs);
   this._passargs = []; // reset passargs
 
-  if ('function' === typeof callback) {
-    args.push(callback);
-  }
-
   return function() {
-    return fn.apply(fn, args);
+    return fn.apply(fn, args.concat(Array.prototype.slice.call(arguments)));
   };
 }
 
@@ -168,7 +165,7 @@ function argumentate(fn, callback) {
 
 function promise(fn) {
   var d = Q.defer();
-  argumentate.call(this, fn, next.bind(this, d))();
+  fn(next.bind(this, d)); // pass next for async
   return d.promise;
 }
 
