@@ -65,6 +65,10 @@ chainMethods
  */
 
 function step(fn) {
+  if ('function' !== typeof fn) {
+    throw new Error('WalkingDead step must be a function');
+  }
+
   if (null === this._zombie) {
     var msg = 'WalkingDead was not zombified, please invoke `zombify` before continuing with steps';
     throw new Error(msg);

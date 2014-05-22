@@ -94,6 +94,12 @@ describe("WalkingDead", function() {
     }, 'WalkingDead was not zombified, please invoke `zombify` before continuing with steps');
   });
 
+  it("throws if the step is not a function", function() {
+    assert.throws(function() {
+      new WalkingDead(url).then('A String');
+    }, 'WalkingDead step must be a function');
+  });
+
   it("assertion errors are not consumed by async-ness", function(done) {
     // new WalkingDead(url).zombify(zopts)
     //   .when(function(browser, next) {
