@@ -62,7 +62,7 @@ chainMethods
  *
  * @param {Function} fn
  * @return {WalkingDead}
- * @api private
+ * @api public
  */
 
 function step(fn) {
