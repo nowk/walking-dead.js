@@ -122,12 +122,11 @@ describe("WalkingDead", function() {
         assert.lengthOf(arguments, 4);
         assert.equal(arg1, 'walking dead');
         assert.equal(arg2, 'Walking Dead!');
-        next(null, arg1+'!', arg2+'!');
+        next(null, arg1+'!');
       })
-      .and(function(browser, arg1, arg2) {
-        assert.lengthOf(arguments, 3);
+      .and(function(browser, arg1) {
+        assert.lengthOf(arguments, 2);
         assert.equal(arg1, 'walking dead!');
-        assert.equal(arg2, 'Walking Dead!!');
       })
       .and(function(browser, next) {
         assert.lengthOf(arguments, 2);
