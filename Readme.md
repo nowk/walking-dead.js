@@ -68,6 +68,24 @@ The first argument in `next` is reserved for a `function` to be executed immedia
 
 *`next` argument, in step functions,  will always be the last argument.*
 
+---
+
+You can also call `end` to end the session. `end` returns `browser` as an agrument if it is defined.
+
+    new WalkingDead('http://localhost:3000/').zombify({})
+      .end(function(browser) {
+        assert.equal(browser.text("title"), "Welcome To Brains Depot");
+        done();
+      });
+
+Or
+
+    new WalkingDead('http://localhost:3000/').zombify({})
+      .then(function(browser) {
+        assert.equal(browser.text("title"), "Welcome To Brains Depot");
+      })
+      .end(done);
+
 
 # License
 
