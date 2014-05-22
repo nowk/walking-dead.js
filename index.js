@@ -70,8 +70,8 @@ function step(fn) {
   }
 
   if (null === this._zombie) {
-    var msg = 'WalkingDead was not zombified, please invoke `zombify` before continuing with steps';
-    throw new Error(msg);
+    throw new Error('WalkingDead was not zombified, please invoke `zombify`' +
+      ' before continuing with steps');
   }
 
   this._steps.push(fn);
