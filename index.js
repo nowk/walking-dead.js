@@ -208,6 +208,6 @@ function next(defer, callback) {
   }
 
   // save args to next pass to next step
-  this._passargs = Array.prototype.slice.call(arguments, 2, arguments.length);
+  this._passargs = Array.prototype.slice.call(arguments, 2);
 }
 
