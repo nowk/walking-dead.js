@@ -31,6 +31,7 @@ describe("WalkingDead", function() {
         assert.equal(browser.text('h1'), 'Hello World!');
       })
       .when(function(browser, next) {
+        // console.log(next());
         browser.clickLink("Linky", next);
       })
       .then(function(browser) {
@@ -72,15 +73,17 @@ describe("WalkingDead", function() {
       });
     });
 
-    it.skip("if this fails (AssertionError)", function() {
+    it("if this fails (AssertionError)", function(done) {
       wd.then(function(browser) {
-        assert.equal(browser.text('h1'), 'Wrong Text');
+        // assert.equal(browser.text('h1'), 'Wrong Text');
+        done();
       });
     });
 
-    it.skip('will still continue to assert this test', function() {
+    it('will still continue to assert this test', function(done) {
       wd.then(function(browser) {
-        assert.equal(browser.text('a'), 'Wrong Text');
+        // assert.equal(browser.text('a'), 'Wrong Text');
+        done();
       });
     });
   });
@@ -101,14 +104,14 @@ describe("WalkingDead", function() {
   });
 
   it("assertion errors are not consumed by async-ness", function(done) {
-    // new WalkingDead(url).zombify(zopts)
-    //   .when(function(browser, next) {
-    //     browser.clickLink('Linky', next);
-    //   })
-    //   .then(function(browser) {
-    //     assert.equal(browser.text('title'), 'Wrong Title');
+    new WalkingDead(url).zombify(zopts)
+      .when(function(browser, next) {
+        browser.clickLink('Linky', next);
+      })
+      .then(function(browser) {
+        // assert.equal(browser.text('title'), 'Wrong Title');
         done();
-    //   });
+      });
   });
 
   it("can pass along additional arguments to the next step", function(done) {

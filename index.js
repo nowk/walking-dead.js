@@ -1,8 +1,6 @@
 /* jshint node: true */
 
 var Browser = require('zombie');
-var Q = require('q');
-var domain = require('domain');
 
 /*
  * expose
@@ -23,13 +21,6 @@ function WalkingDead(url) {
   this._steps = [];
   this._passargs = [];
   this._zombie = null;
-
-  var self = this;
-  this.d = domain.create();
-  this.d.on('error', function(err) {
-    self.walking = false;
-    throw err; // throw it back out
-  });
 }
 
 /*
@@ -126,37 +117,17 @@ function step(fn) {
 
 function walk() {
   if (this._steps.length > 0) {
-    var fn = turn.call(this, this._steps.shift());
-    var self = this;
-
-    this.d.run(function() {
-      process.nextTick(function() {
-        var _returned = fn();
-        if ('undefined' !== typeof _returned && 'then' in _returned) { // promise
-          _returned.then(walk.bind(self));
-        } else {
-          walk.call(self);
-        }
-      });
-    });
+    var fn = this._steps.shift();
+    fn = curry.call(this, fn, (2 === (fn.length - this._passargs.length)));
+    try {
+      fn();
+      this._passargs = []; // clear
+    } catch(err) {
+      this.walking = false;
+      throw err; // rethrow
+    }
   } else {
     this.walking = false;
-  }
-}
-
-/*
- * curry and promise (if applicable)
- *
- * @param {Function} fn
- * @return {Function}
- * @api private
- */
-
-function turn(fn) {
-  if (2 === (fn.length - this._passargs.length)) {
-    return promise.bind(this, curry.call(this, fn));
-  } else {
-    return curry.call(this, fn);
   }
 }
 
@@ -164,50 +135,44 @@ function turn(fn) {
  * curry arguments
  *
  * @param {Function} fn
+ * @param {Boolean} async
  * @return {Function}
  * @api private
  */
 
-function curry(fn) {
-  var args = [this.browser].concat(this._passargs);
-  this._passargs = []; // reset passargs
-
+function curry(fn, async) {
+  var self = this;
   return function() {
-    return fn.apply(fn, args.concat(Array.prototype.slice.call(arguments)));
+    var args = [self.browser]
+      .concat(self._passargs)
+      .concat(Array.prototype.slice.call(arguments));
+
+    if (true === async) { // add next to call for async
+      args.push(next.bind(self));
+    }
+
+    fn.apply(fn, args);
+    if (!async) next.call(self);
   };
-}
-
-/*
- * wrap in promise
- *
- * @param {Function} fn
- * @return {Promise}
- */
-
-function promise(fn) {
-  var d = Q.defer();
-  fn(next.bind(this, d)); // pass next for async
-  return d.promise;
 }
 
 /*
  * next for async
  *
- * @param {defer} defer
  * @param {Function} callback
  * @api private
  */
 
-function next(defer, callback) {
-  defer.resolve();
-
+function next(callback) {
   // if callback is a function execute and return, this is primarily
   // reserved to handle `done` invocations for async tests
   if ('function' === typeof callback) {
+    this.walking = false;
     return callback();
   }
 
   // save args to next pass to next step
-  this._passargs = Array.prototype.slice.call(arguments, 2);
+  this._passargs = Array.prototype.slice.call(arguments, 1); // adjust for null
+  walk.call(this);
 }
 

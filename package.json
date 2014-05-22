@@ -22,7 +22,6 @@
     "sinon": "^1.9.1"
   },
   "dependencies": {
-    "q": "^1.0.1",
     "zombie": "^2.0.0-alpha31"
   }
 }
