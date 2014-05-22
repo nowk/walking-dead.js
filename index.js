@@ -121,7 +121,6 @@ function walk() {
     fn = curry.call(this, fn, (2 === (fn.length - this._passargs.length)));
     try {
       fn();
-      this._passargs = []; // clear
     } catch(err) {
       this.walking = false;
       throw err; // rethrow
@@ -146,6 +145,8 @@ function curry(fn, async) {
     var args = [self.browser]
       .concat(self._passargs)
       .concat(Array.prototype.slice.call(arguments));
+
+    self._passargs = []; // clear
 
     if (true === async) { // add next to call for async
       args.push(next.bind(self));
