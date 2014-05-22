@@ -21,6 +21,7 @@ function WalkingDead(url) {
   this.url = url;
   this.walking = false;
   this._steps = [];
+  this._passargs = [];
   this._zombie = null;
 
   var self = this;
@@ -104,22 +105,15 @@ function step(fn) {
 
 function walk() {
   if (this._steps.length > 0) {
+    var fn = turn.call(this, this._steps.shift());
     var self = this;
-    var fn = this._steps.shift();
-    var passArgsLength = !!!this._passArgs ? 0 : this._passArgs.length;
-
-    if (fn.length-passArgsLength === 2) {
-      fn = turn(fn).bind(this, this.browser, this._passArgs); // async wrap in promise
-      fn._promised = true;
-    }
 
     this.d.run(function() {
       process.nextTick(function() {
-        if (fn._promised) {
-          fn().then(walk.bind(self));
+        var _returned = fn();
+        if ('undefined' !== typeof _returned && 'then' in _returned) { // promise
+          _returned.then(walk.bind(self));
         } else {
-          fn.apply(fn, [self.browser].concat(self._passArgs));
-          clearPassArgs.call(self);
           walk.call(self);
         }
       });
@@ -130,7 +124,7 @@ function walk() {
 }
 
 /*
- * wrap in a promise
+ * return function after curry (and async if applicable)
  *
  * @param {Function} fn
  * @return {Function}
@@ -138,16 +132,44 @@ function walk() {
  */
 
 function turn(fn) {
-  return function(browser, extraArgs) {
-    var d = Q.defer();
-    var args = [browser];
-    if ('undefined' !== typeof extraArgs) {
-      args = args.concat(extraArgs);
-    }
-    args.push(next.bind(this, d));
-    fn.apply(fn, args);
-    return d.promise;
+  return (2 === (fn.length - this._passargs.length)) ?
+    promise.bind(this, fn) :
+    argumentate.call(this, fn);
+}
+
+/*
+ * curry arguments
+ *
+ * @param {Function} fn
+ * @param {Function} callback
+ * @return {Function}
+ * @api private
+ */
+
+function argumentate(fn, callback) {
+  var args = [this.browser].concat(this._passargs);
+  this._passargs = []; // reset passargs
+
+  if ('function' === typeof callback) {
+    args.push(callback);
+  }
+
+  return function() {
+    return fn.apply(fn, args);
   };
+}
+
+/*
+ * wrap in promise
+ *
+ * @param {Function} fn
+ * @return {Promise}
+ */
+
+function promise(fn) {
+  var d = Q.defer();
+  argumentate.call(this, fn, next.bind(this, d))();
+  return d.promise;
 }
 
 /*
@@ -167,20 +189,7 @@ function next(defer, callback) {
     return callback();
   }
 
-  var passArgs = Array.prototype.slice.call(arguments, 2, arguments.length);
-  if (passArgs.length > 0) {
-    this._passArgs = passArgs;
-  } else {
-    clearPassArgs.call(this);
-  }
+  // save args to next pass to next step
+  this._passargs = Array.prototype.slice.call(arguments, 2, arguments.length);
 }
 
-/*
- * undefine _passArgs
- *
- * @api private
- */
-
-function clearPassArgs() {
-  delete this._passArgs;
-}
