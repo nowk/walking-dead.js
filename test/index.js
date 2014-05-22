@@ -134,5 +134,39 @@ describe("WalkingDead", function() {
         next(done);
       });
   });
+
+  describe("end", function() {
+    it("'destroys' the current browser session", function(done) {
+      new WalkingDead(url).zombify(zopts)
+        .end(function(browser) {
+          process.nextTick(function() {
+            assert.isNull(browser.tabs);
+            done();
+          });
+        });
+    });
+
+    it("is no longer chainable", function(done) {
+      var wd = new WalkingDead(url).zombify(zopts);
+      assert.isUndefined(wd.end(function(browser) {
+        done();
+      }));
+    });
+
+    it("sends browser back as the only argument", function(done) {
+      new WalkingDead(url).zombify(zopts)
+        .end(function(browser, next) {
+          assert.lengthOf(arguments, 1);
+          assert.isUndefined(next, 1);
+          assert.equal(browser.text('title'), 'Walking Dead');
+          done();
+        });
+    });
+
+    it("can call done with no argument", function(done) {
+      new WalkingDead(url).zombify(zopts)
+        .end(done);
+    });
+  });
 });
 

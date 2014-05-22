@@ -58,6 +58,27 @@ chainMethods
   });
 
 /*
+ * end
+ *
+ * @param {Function} fn
+ * @api public
+ */
+
+WalkingDead.prototype.end = function(fn) {
+  var self = this;
+  var args = [this.browser];
+
+  if (/^function\s?\(err\)\s?{/.test(fn.toString())) { // mocha done()
+    args = [];
+  }
+
+  step.call(this, function() {
+    fn.apply(self, args);
+    self.browser.destroy();
+  });
+};
+
+/*
  * push steps to queue and start walking if not
  *
  * @param {Function} fn
