@@ -161,6 +161,14 @@ describe("WalkingDead", function() {
       new WalkingDead(url).zombify(zopts)
         .end(done);
     });
+
+    it("does not need a function", function(done) {
+      var wd = new WalkingDead(url).zombify(zopts);
+      wd.then(function() {
+        wd.end();
+        done();
+      });
+    });
   });
 });
 

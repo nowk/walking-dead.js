@@ -59,12 +59,15 @@ WalkingDead.prototype.end = function(fn) {
   var self = this;
   var args = [this.browser];
 
-  if (/^function\s?\(err\)\s?{/.test(fn.toString())) { // mocha done()
-    args = [];
-  }
-
   step.call(this, function() {
-    fn.apply(self, args);
+    if ('function' === typeof fn) {
+      if (/^function\s?\(err\)\s?{/.test(fn.toString())) { // mocha done()
+        args = [];
+      }
+
+      fn.apply(self, args);
+    }
+
     self.browser.destroy();
   });
 };
