@@ -24,14 +24,10 @@ describe("WalkingDead", function() {
 
   it("has given/when/then/and chainable methods", function(done) {
     new WalkingDead(url).zombify(zopts)
-      .then(function(browser) {
+      .given(function(browser) {
         assert.equal(browser.text('title'), 'Walking Dead');
       })
-      .and(function(browser) {
-        assert.equal(browser.text('h1'), 'Hello World!');
-      })
       .when(function(browser, next) {
-        // console.log(next());
         browser.clickLink("Linky", next);
       })
       .then(function(browser) {
@@ -39,15 +35,6 @@ describe("WalkingDead", function() {
       })
       .and(function(browser) {
         assert.equal(browser.text('h1'), 'Linky!');
-      })
-      .when(function(browser, next) {
-        browser.clickLink("Home", next);
-      })
-      .then(function(browser) {
-        assert.equal(browser.text('title'), 'Walking Dead');
-      })
-      .and(function(browser) {
-        assert.equal(browser.text('h1'), 'Hello World!');
         done();
       });
   });
@@ -55,15 +42,19 @@ describe("WalkingDead", function() {
   describe("spanning across multiple test cases", function() {
     var wd;
 
-    it("can span", function() {
+    before(function() {
       wd = new WalkingDead(url).zombify(zopts);
+    });
+
+    it("can span", function() {
+      wd.given(function(browser) {
+        assert.equal(browser.text('title'), 'Walking Dead');
+      });
     });
 
     it("multiple", function(done) {
       wd.when(function(browser, next) {
-        browser.clickLink('Linky', function() {
-          next(done);
-        });
+        browser.clickLink('Linky', next.bind(null, done));
       });
     });
 
