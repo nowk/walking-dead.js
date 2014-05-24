@@ -57,13 +57,11 @@ chainMethods
 
 WalkingDead.prototype.end = function(fn) {
   var self = this;
-  var args = [this.browser];
-
   step.call(this, function() {
     if ('function' === typeof fn) {
-      if (/^function\s?\(err\)\s?{/.test(fn.toString())) { // mocha done()
-        args = [];
-      }
+      var args = (/^function\s?\(err\)\s?{/.test(fn.toString())) ?
+        [] : // mocha done
+        [self.browser].concat(Array.prototype.slice.call(arguments, 1));
 
       fn.apply(self, args);
     }
@@ -163,23 +161,12 @@ function curry(fn, async) {
 /*
  * next for async
  *
- * @param {Function} callback
  * @api private
  */
 
-function next(callback) {
-  var sliceAt = 0;
-
-  // if callback is a function execute and return, this is primarily
-  // reserved to handle `done` invocations for async tests
-  if ('function' === typeof callback) {
-    sliceAt = 1;
-    this.walking = false;
-    return callback();
-  }
-
+function next() {
   // save args to next pass to next step
-  this._passargs = Array.prototype.slice.call(arguments, sliceAt);
+  this._passargs = Array.prototype.slice.call(arguments);
   walk.call(this);
 }
 

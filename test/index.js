@@ -53,8 +53,8 @@ describe("WalkingDead", function() {
     });
 
     it("multiple", function(done) {
-      wd.when(function(browser, next) {
-        browser.clickLink('Linky', next.bind(null, done));
+      wd.when(function(browser) {
+        browser.clickLink('Linky', done);
       });
     });
 
@@ -125,7 +125,12 @@ describe("WalkingDead", function() {
       .and(function(browser, next) {
         assert.lengthOf(arguments, 2);
         assert.equal(typeof next, 'function');
-        next(done);
+        next(function() {
+          done();
+        });
+      })
+      .then(function(browser, fn) {
+        fn();
       });
   });
 
@@ -155,6 +160,20 @@ describe("WalkingDead", function() {
           assert.isUndefined(next, 1);
           assert.equal(browser.text('title'), 'Walking Dead');
           done();
+        });
+    });
+
+    it("will send any passed arguments from the prior step", function(done) {
+      new WalkingDead(url).zombify(zopts)
+        .when(function(browser, next) {
+          next(function() {
+            done();
+          });
+        })
+        .end(function(browser, fn) {
+          assert.lengthOf(arguments, 2);
+          assert.equal(typeof fn, 'function');
+          fn();
         });
     });
 

@@ -61,14 +61,17 @@ Passing additional `agruments` to the next step.
       })
       .then(function(browser, lowerCaseTitle, next) {
         assert.equal(lowerCaseTitle, '<a lowercased title>');
-        next(done);
+        next(function() {
+          done();
+        });
+      })
+      .end(function(browser, fn) {
+        fn();
       });
-
-If the first argument in `next` is a `function` that will be invoked immediately.
 
 ---
 
-You can also call `end` to end the session. `end` returns `browser` as an agrument if it is defined.
+You can also call `end` to end the session. `end` returns `browser` as the first agrument by default, as well as any arguments `next`ed from the prior step.
 
     new WalkingDead('http://localhost:3000/').zombify({})
       .end(function(browser) {
