@@ -110,13 +110,13 @@ describe("WalkingDead", function() {
       .given(function(browser, next) {
         assert.lengthOf(arguments, 2);
         var title = browser.text('title');
-        next(null, title.toLowerCase(), title+'!');
+        next(title.toLowerCase(), title+'!');
       })
       .then(function(browser, arg1, arg2,  next) {
         assert.lengthOf(arguments, 4);
         assert.equal(arg1, 'walking dead');
         assert.equal(arg2, 'Walking Dead!');
-        next(null, arg1+'!');
+        next(arg1+'!');
       })
       .and(function(browser, arg1) {
         assert.lengthOf(arguments, 2);

@@ -168,15 +168,18 @@ function curry(fn, async) {
  */
 
 function next(callback) {
+  var sliceAt = 0;
+
   // if callback is a function execute and return, this is primarily
   // reserved to handle `done` invocations for async tests
   if ('function' === typeof callback) {
+    sliceAt = 1;
     this.walking = false;
     return callback();
   }
 
   // save args to next pass to next step
-  this._passargs = Array.prototype.slice.call(arguments, 1); // adjust for null
+  this._passargs = Array.prototype.slice.call(arguments, sliceAt);
   walk.call(this);
 }
 
