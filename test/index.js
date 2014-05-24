@@ -133,6 +133,7 @@ describe("WalkingDead", function() {
     it("'destroys' the current browser session", function(done) {
       new WalkingDead(url).zombify(zopts)
         .end(function(browser) {
+          assert.lengthOf(browser.tabs, 1);
           process.nextTick(function() {
             assert.isNull(browser.tabs);
             done();
