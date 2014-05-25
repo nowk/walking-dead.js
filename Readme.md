@@ -1,7 +1,7 @@
+# Walking Dead
+
 [![Build Status](https://travis-ci.org/nowk/walking-dead.js.svg?branch=master)](https://travis-ci.org/nowk/walking-dead.js)
 [![Code Climate](https://codeclimate.com/github/nowk/walking-dead.js.png)](https://codeclimate.com/github/nowk/walking-dead.js)
-
-# Walking Dead
 
 Zombies don't like pasta.
 
