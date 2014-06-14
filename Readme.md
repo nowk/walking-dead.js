@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/nowk/walking-dead.js.svg?branch=master)](https://travis-ci.org/nowk/walking-dead.js)
 [![Code Climate](https://codeclimate.com/github/nowk/walking-dead.js.png)](https://codeclimate.com/github/nowk/walking-dead.js)
+[![David DM](https://david-dm.org/nowk/walking-dead.js.png)](https://david-dm.org/nowk/walking-dead.js)
 
 Zombies don't like pasta.
 
