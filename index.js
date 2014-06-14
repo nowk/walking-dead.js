@@ -166,7 +166,11 @@ function curry(fn, async) {
 
 function next() {
   // save args to next pass to next step
-  this._passargs = Array.prototype.slice.call(arguments);
+  this._passargs = Array.prototype.slice.call(arguments)
+    .filter(function(a) {
+      return 'undefined' !== typeof a;
+    });
+
   walk.call(this);
 }
 

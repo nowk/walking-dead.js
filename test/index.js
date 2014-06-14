@@ -105,6 +105,37 @@ describe("WalkingDead", function() {
       });
   });
 
+  it("never seen `waitable` functions every passback the args defined in the docs or code", 
+    function(done) {
+
+    /*
+     * eg. `clickLink`, `pressButton`
+     * supposed to callback(err, browser, status) But, i've never seen them return anything
+     * but undefined...
+     *
+     * https://github.com/assaf/zombie/blob/master/src/zombie/browser.coffee#L899
+     * https://github.com/assaf/zombie/blob/master/src/zombie/browser.coffee#L598
+     */
+
+    var now = new Date();
+    var start;
+    new WalkingDead(url).zombify(zopts)
+      .when(function(browser, next) {
+        browser.clickLink('Linky', next);
+      })
+      .and(function(browser, next) {
+        start = new Date().getTime();
+        setTimeout(function() {
+          next();
+        }, 2000);
+      })
+      .then(function(browser) {
+        var end = new Date().getTime();
+        assert(end >= start+2000);
+        done();
+      });
+  });
+
   it("can pass along additional arguments to the next step", function(done) {
     new WalkingDead(url).zombify(zopts)
       .given(function(browser, next) {
